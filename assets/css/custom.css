@@ -205,21 +205,29 @@ section.cover .cover-main {
   }
 
   .app-nav ul {
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
   }
 
   .app-nav li {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     text-align: center;
+  }
+
+  .app-nav li:nth-child(-n+3) {
+    width: calc((100% - 32px) / 3);
+  }
+
+  .app-nav li:nth-child(n+4) {
+    width: calc((100% - 16px) / 2);
   }
 
   .app-nav a {
     font-size: 0.9rem;
     line-height: 1.2;
     padding: 2px 2px;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .cover-main a {
