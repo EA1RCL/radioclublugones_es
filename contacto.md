@@ -27,5 +27,6 @@ contacto @ radioclublugones . es
     Principado de Asturias  
     ESPAÑA
 
-![Location](assets/img/location.png)
+![Location](assets/img/location.png)  
+
 [Large map on Google Maps](https://maps.app.goo.gl/hXNFednQeUSGp9eg8)
