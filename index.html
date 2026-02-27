@@ -21,9 +21,27 @@
   <script>
     mermaid.initialize({ startOnLoad: false });
 
+    function setLandingNavOpen(nav, open) {
+      nav.classList.toggle("open", open);
+      const overlay = document.getElementById("landing-nav-overlay");
+      if (overlay) overlay.classList.toggle("show", open);
+      document.body.classList.toggle("landing-nav-open", open);
+    }
+
     function ensureLandingNavToggle() {
       const nav = document.querySelector(".app-nav");
       if (!nav) return;
+
+      let overlay = document.getElementById("landing-nav-overlay");
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "landing-nav-overlay";
+        overlay.className = "landing-nav-overlay";
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click", function() {
+          setLandingNavOpen(nav, false);
+        });
+      }
 
       let toggle = nav.querySelector(".landing-nav-toggle");
       if (!toggle) {
@@ -35,13 +53,19 @@
         nav.insertBefore(toggle, nav.firstChild);
 
         toggle.addEventListener("click", function() {
-          nav.classList.toggle("open");
+          setLandingNavOpen(nav, !nav.classList.contains("open"));
         });
       }
 
       if (!nav.dataset.menuBound) {
         nav.addEventListener("click", function(e) {
-          if (e.target.closest("a")) nav.classList.remove("open");
+          if (e.target.closest("a")) setLandingNavOpen(nav, false);
+        });
+        window.addEventListener("keydown", function(e) {
+          if (e.key === "Escape") setLandingNavOpen(nav, false);
+        });
+        window.addEventListener("resize", function() {
+          if (window.innerWidth > 900) setLandingNavOpen(nav, false);
         });
         nav.dataset.menuBound = "1";
       }
@@ -54,7 +78,7 @@
       const coverVisible = !!(cover && cover.classList.contains("show"));
       nav.style.display = coverVisible ? "" : "none";
       if (coverVisible) ensureLandingNavToggle();
-      if (!coverVisible) nav.classList.remove("open");
+      if (!coverVisible) setLandingNavOpen(nav, false);
     }
 
     // Mini "CMS" estático: renderiza la home leyendo posts.json
