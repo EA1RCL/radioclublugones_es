@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Radio Club Lugones</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Theme base (puedes cambiar a theme-simple-dark si quieres) -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+
+  <!-- Estilos estilo "revista" -->
+  <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <script>
+    mermaid.initialize({ startOnLoad: false });
+
+    function updateTopNavVisibility() {
+      const nav = document.querySelector(".app-nav");
+      if (!nav) return;
+      const cover = document.querySelector("section.cover");
+      const coverVisible = !!(cover && cover.classList.contains("show"));
+      nav.style.display = coverVisible ? "" : "none";
+    }
+
+    // Mini "CMS" estático: renderiza la home leyendo posts.json
+    async function renderHomePosts() {
+      const container = document.getElementById('latest-posts');
+      if (!container) return;
+
+      try {
+        const res = await fetch('posts.json', { cache: 'no-store' });
+        const posts = await res.json();
+
+        container.innerHTML = posts.map(p => `
+          <article class="post-card">
+            <a class="post-link" href="${p.path}">
+              <img class="post-cover" src="${p.cover}" alt="${p.title}">
+              <div class="post-info">
+                <span class="post-category">${p.category}</span>
+                <h3 class="post-title">${p.title}</h3>
+                <div class="post-meta">${p.date} · ${p.author}</div>
+              </div>
+            </a>
+          </article>
+        `).join('');
+      } catch (e) {
+        container.innerHTML = '<p class="post-error">No se pudieron cargar las entradas. Revisa posts.json.</p>';
+      }
+    }
+
+    window.$docsify = {
+      name: "Radio Club Lugones",
+      repo: "",
+      homepage: "README.md",
+      loadNavbar: true,
+      loadSidebar: true,
+      coverpage: true,
+      onlyCover: false,
+      subMaxLevel: 2,
+
+      // Render Mermaid blocks: ```mermaid
+      markdown: {
+        renderer: {
+          code: function(code, lang) {
+            if (lang === "mermaid") {
+              return '<div class="mermaid">' + code + '</div>';
+            }
+            return this.origin.code.apply(this, arguments);
+          }
+        }
+      },
+
+      plugins: [
+        function(hook) {
+          // Después de renderizar cada página
+          hook.doneEach(function() {
+            // Mermaid
+            try { mermaid.run({ querySelector: ".mermaid" }); } catch (e) {}
+
+            // Mostrar navbar superior solo en landing (cover)
+            updateTopNavVisibility();
+
+            // Home cards (README): no uses <script> en el MD, Docsify lo filtra.
+            // En su lugar, detectamos el contenedor y lo rellenamos aquí.
+            renderHomePosts();
+          });
+        }
+      ]
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Visita de Iván de Radio Bunker",
+    "date": "2025-05-28",
+    "author": "EA1AUO",
+    "category": "Novedades",
+    "cover": "assets/img/post1.jpg",
+    "path": "#/posts/2025-05-28-visita-ivan"
+  },
+  {
+    "title": "Fotos de la Visita de Iván",
+    "date": "2025-05-26",
+    "author": "EA1AUO",
+    "category": "Novedades",
+    "cover": "assets/img/post2.jpg",
+    "path": "#/posts/2025-05-26-fotos-radio-bunker"
+  }
+]

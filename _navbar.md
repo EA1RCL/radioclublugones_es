@@ -1,0 +1,5 @@
+* [Inicio](/)
+* [El Club](el-club.md)
+* [Noticias](/?id=ultimas-noticias)
+* [Activaciones](activaciones.md)
+* [Contacto](contacto.md)
