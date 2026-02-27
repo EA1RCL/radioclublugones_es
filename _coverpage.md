@@ -2,4 +2,4 @@
 
 # Bienvenidos al<br>Radio&nbsp;Club&nbsp;Lugones
 
-[Ver últimas noticias](/?id=ultimas-noticias) [El Club](el-club.md)
+[Ver últimas noticias](/ultimas-noticias.md) [El Club](el-club.md)

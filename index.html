@@ -20,65 +20,36 @@
 
   <script>
     mermaid.initialize({ startOnLoad: false });
+    let landingNavBound = false;
 
-    function setLandingNavOpen(nav, open) {
-      nav.classList.toggle("open", open);
-      const overlay = document.getElementById("landing-nav-overlay");
-      if (overlay) overlay.classList.toggle("show", open);
-      document.body.classList.toggle("landing-nav-open", open);
+    function isHomeRoute() {
+      const h = window.location.hash || "";
+      return h === "" || h === "#" || h === "#/" || h === "#/!";
     }
 
-    function ensureLandingNavToggle() {
+    function updateLandingNavVisibility() {
       const nav = document.querySelector(".app-nav");
       if (!nav) return;
+      const cover = document.querySelector("section.cover.show");
+      const content = document.querySelector(".content");
+      let show = false;
 
-      let overlay = document.getElementById("landing-nav-overlay");
-      if (!overlay) {
-        overlay = document.createElement("div");
-        overlay.id = "landing-nav-overlay";
-        overlay.className = "landing-nav-overlay";
-        document.body.appendChild(overlay);
-        overlay.addEventListener("click", function() {
-          setLandingNavOpen(nav, false);
-        });
+      if (cover && isHomeRoute()) {
+        const scrollTop = content ? content.scrollTop : window.scrollY;
+        const threshold = Math.max(120, cover.clientHeight * 0.55);
+        show = scrollTop < threshold;
       }
 
-      let toggle = nav.querySelector(".landing-nav-toggle");
-      if (!toggle) {
-        toggle = document.createElement("button");
-        toggle.className = "landing-nav-toggle";
-        toggle.type = "button";
-        toggle.setAttribute("aria-label", "Abrir menu");
-        toggle.innerHTML = "<span></span><span></span><span></span>";
-        nav.insertBefore(toggle, nav.firstChild);
-
-        toggle.addEventListener("click", function() {
-          setLandingNavOpen(nav, !nav.classList.contains("open"));
-        });
-      }
-
-      if (!nav.dataset.menuBound) {
-        nav.addEventListener("click", function(e) {
-          if (e.target.closest("a")) setLandingNavOpen(nav, false);
-        });
-        window.addEventListener("keydown", function(e) {
-          if (e.key === "Escape") setLandingNavOpen(nav, false);
-        });
-        window.addEventListener("resize", function() {
-          if (window.innerWidth > 900) setLandingNavOpen(nav, false);
-        });
-        nav.dataset.menuBound = "1";
-      }
+      nav.style.display = show ? "" : "none";
     }
 
-    function updateTopNavVisibility() {
-      const nav = document.querySelector(".app-nav");
-      if (!nav) return;
-      const cover = document.querySelector("section.cover");
-      const coverVisible = !!(cover && cover.classList.contains("show"));
-      nav.style.display = coverVisible ? "" : "none";
-      if (coverVisible) ensureLandingNavToggle();
-      if (!coverVisible) setLandingNavOpen(nav, false);
+    function bindLandingNavVisibility() {
+      if (landingNavBound) return;
+      window.addEventListener("hashchange", updateLandingNavVisibility);
+      window.addEventListener("resize", updateLandingNavVisibility);
+      window.addEventListener("scroll", updateLandingNavVisibility, { passive: true });
+      document.addEventListener("scroll", updateLandingNavVisibility, { passive: true, capture: true });
+      landingNavBound = true;
     }
 
     // Mini "CMS" estático: renderiza la home leyendo posts.json
@@ -110,7 +81,7 @@
     window.$docsify = {
       name: "Radio Club Lugones",
       repo: "",
-      homepage: "README.md",
+      homepage: "ultimas-noticias.md",
       loadNavbar: true,
       loadSidebar: true,
       coverpage: true,
@@ -136,12 +107,14 @@
             // Mermaid
             try { mermaid.run({ querySelector: ".mermaid" }); } catch (e) {}
 
-            // Mostrar navbar superior solo en landing (cover)
-            updateTopNavVisibility();
-
             // Home cards (README): no uses <script> en el MD, Docsify lo filtra.
             // En su lugar, detectamos el contenedor y lo rellenamos aquí.
             renderHomePosts();
+
+            // Navbar superior solo en landing visible
+            bindLandingNavVisibility();
+            updateLandingNavVisibility();
+            setTimeout(updateLandingNavVisibility, 0);
           });
         }
       ]
