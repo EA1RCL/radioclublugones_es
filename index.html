@@ -21,12 +21,40 @@
   <script>
     mermaid.initialize({ startOnLoad: false });
 
+    function ensureLandingNavToggle() {
+      const nav = document.querySelector(".app-nav");
+      if (!nav) return;
+
+      let toggle = nav.querySelector(".landing-nav-toggle");
+      if (!toggle) {
+        toggle = document.createElement("button");
+        toggle.className = "landing-nav-toggle";
+        toggle.type = "button";
+        toggle.setAttribute("aria-label", "Abrir menu");
+        toggle.innerHTML = "<span></span><span></span><span></span>";
+        nav.insertBefore(toggle, nav.firstChild);
+
+        toggle.addEventListener("click", function() {
+          nav.classList.toggle("open");
+        });
+      }
+
+      if (!nav.dataset.menuBound) {
+        nav.addEventListener("click", function(e) {
+          if (e.target.closest("a")) nav.classList.remove("open");
+        });
+        nav.dataset.menuBound = "1";
+      }
+    }
+
     function updateTopNavVisibility() {
       const nav = document.querySelector(".app-nav");
       if (!nav) return;
       const cover = document.querySelector("section.cover");
       const coverVisible = !!(cover && cover.classList.contains("show"));
       nav.style.display = coverVisible ? "" : "none";
+      if (coverVisible) ensureLandingNavToggle();
+      if (!coverVisible) nav.classList.remove("open");
     }
 
     // Mini "CMS" estático: renderiza la home leyendo posts.json
