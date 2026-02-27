@@ -1,2 +1,2 @@
-# radioclublugones_es
-Code repository for the club website
+# RadioClubLugones.es
+Code repository for the Asociación "Radio Club Lugones" website
